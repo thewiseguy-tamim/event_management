@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <title>BD Events Navbar</title>
+</head>
+<body>
+    <nav class="bg-gray-100 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Left section (Logo and search) -->
+                <div class="flex items-center flex-1">
+                    <!-- Logo -->
+                    <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
+                    
+                    <!-- Search Bar -->
+                    <div class="ml-6 flex-1 max-w-xl">
+                        <div class="relative flex items-center">
+                            <input 
+                                type="text" 
+                                placeholder="Search events..." 
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+                            >
+                            <button class="ml-2 bg-transparent hover:bg-gray-100 p-2 rounded-lg">
+                                <svg 
+                                    class="w-6 h-6 text-gray-500" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24" 
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        stroke-width="2" 
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right section (Navigation links) -->
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Events
+                    </a>
+                    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                        Create Event
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Featured Events Section -->
+    <section class="bg-gray-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Featured Events</h2>
+                <p class="text-gray-600 mt-2">Discover exciting upcoming events</p>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Event Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <img src="{% static 'images/event 1.jpg' %}" alt="Event image" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <span class="text-sm text-blue-600 font-semibold">Music Festival</span>
+                        <h3 class="text-xl font-bold text-gray-900 mt-2">Dhaka Summer Beats</h3>
+                        <div class="mt-4 space-y-2">
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>25-27 March 2024</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>Army Stadium, Dhaka</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mt-4 line-clamp-3">Experience the biggest music festival in Bangladesh featuring international artists and local talents. Three days of non-stop music, food, and entertainment.</p>
+                        <button class="mt-6 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 view-details-button">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <img src="{% static "images/event 2.jpg" %}" alt="Event image" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <span class="text-sm text-blue-600 font-semibold">Tech Conference</span>
+                        <h3 class="text-xl font-bold text-gray-900 mt-2">Digital Bangladesh Summit</h3>
+                        <div class="mt-4 space-y-2">
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>25-27 March 2024</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>Army Stadium, Dhaka</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mt-4 line-clamp-3">Experience the biggest music festival in Bangladesh featuring international artists and local talents. Three days of non-stop music, food, and entertainment.</p>
+                        <button class="mt-6 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 view-details-button">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <img src="{% static "images/event 3.jpeg" %}" alt="Event image" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <span class="text-sm text-blue-600 font-semibold">Food Festival</span>
+                        <h3 class="text-xl font-bold text-gray-900 mt-2">Taste of Bangladesh</h3>
+                        <div class="mt-4 space-y-2">
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>25-27 March 2024</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>Army Stadium, Dhaka</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mt-4 line-clamp-3">Experience the biggest music festival in Bangladesh featuring international artists and local talents. Three days of non-stop music, food, and entertainment.</p>
+                        <button class="mt-6 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 view-details-button">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+        <!-- Upcoming Events Section -->
+    <section class="bg-gray-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Upcoming Events</h2>
+                <p class="text-gray-600 mt-2">Browse all upcoming events</p>
+            </div>
+
+            <!-- Events Container -->
+            <div class="grid grid-cols-1 gap-6" id="eventsContainer">
+                <!-- Event Item 1 -->
+                <div class="bg-white rounded-lg shadow-md border border-gray-100">
+                    <!-- Event Summary -->
+                    <div class="p-6 cursor-pointer event-header" onclick="toggleEventDetails(this)">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                        Music Festival
+                                    </span>
+                                    <div class="flex items-center text-gray-600">
+                                        <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                        </svg>
+                                        <span class="text-sm">1,234 Participants</span>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mt-4">Dhaka Summer Beats</h3>
+                                <div class="mt-2 flex items-center space-x-4 text-gray-600">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span>March 25, 2024</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <span>Army Stadium, Dhaka</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Event Details-->
+                    <div class="event-details hidden px-6 pb-6">
+                        <div class="border-t border-gray-200 pt-6">
+                            <h4 class="text-lg font-semibold mb-4">Event Details</h4>
+                            <p class="text-gray-600 mb-6">Experience the biggest music festival in Bangladesh featuring international artists and local talents. Three days of non-stop music, food, and entertainment.</p>
+                            
+                            <h4 class="text-lg font-semibold mb-4">Participants (1,234)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <!-- Participant Card -->
+                                <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg">
+                                    <img src="{% static "images/mm.jpg" %}" alt="Participant" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-medium text-gray-900">John Doe</p>
+                                        <p class="text-sm text-gray-500">Musician</p>
+                                    </div>
+                                </div>
+                                <!-- More participants... -->
+                            </div>
+                            
+                            <div class="mt-6 flex space-x-4">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                    Join Event
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                                    Share Event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+        <!-- Forum Section -->
+    <section id="create-event" class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Forum</h2>
+                
+                <!-- Selection Tabs -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Entry Type:</label>
+                    <select id="entryType" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                            onchange="toggleFormFields()">
+                        <option value="event">Add Event</option>
+                        <option value="participant">Add Participant</option>
+                        <option value="category">Add Category</option>
+                    </select>
+                </div>
+
+                
+                <form method="POST" action="{% url 'create_entry' %}" class="space-y-6">
+                    {% csrf_token %}
+                    <div id="eventForm" >
+                        {{ event_form.as_p }}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Event Name</label>
+                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Event Date</label>
+                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Location</label>
+                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Category</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option>Music</option>
+                                    <option>Tech</option>
+                                    <option>Food</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium text-gray-700">Event Description</label>
+                            <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="participantForm" class="hidden">
+                        {{ participant_form.as_p }}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email</label>
+                                <input type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Role</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option>Attendee</option>
+                                    <option>Organizer</option>
+                                    <option>Speaker</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Bio</label>
+                                <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="categoryForm" class="hidden">
+                        {{ category_form.as_p }}
+                        <div class="grid grid-cols-1 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Category Name</label>
+                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="mt-8">
+                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
+                            Submit Entry
+                        </button>
+                    </div>
+                                        {% if event_form.errors %}
+                    <div class="bg-red-100 text-red-700 p-4 rounded-md">
+                        <strong>Errors:</strong>
+                        <ul>
+                            {% for field in event_form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </section>  
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- About Column -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">BD Events</h3>
+                    <p class="text-gray-400 text-sm">Connecting people through memorable experiences since 2025.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <form class="flex flex-col space-y-3">
+                        <input type="email" placeholder="Enter your email" class="p-2 rounded-md text-gray-900">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 BD Events. All rights reserved.</p>
+                <p>Developed by Tamim Islam.</p>
+            </div>
+        </div>
+    </footer>
+    <div id="eventModal" class="hidden fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50">
+        <div class="relative p-4 w-full max-w-2xl m-auto mt-20">
+            <div class="bg-white rounded-lg shadow-xl">
+                <div class="p-6">
+                    <!-- Modal Header -->
+                    <div class="flex justify-between items-center pb-4">
+                        <h3 id="modalTitle" class="text-2xl font-bold text-gray-900"></h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Modal Content -->
+                    <img id="modalImage" class="w-full h-64 object-cover mb-4 rounded-lg" src="" alt="Event image">
+                    <div class="space-y-2 text-gray-600">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span id="modalDate"></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span id="modalLocation"></span>
+                        </div>
+                        <p id="modalDescription" class="mt-4 text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <script>
+        function openEventModal(button) {
+            const card = button.closest('.bg-white');
+
+            const title = card.querySelector('h3').textContent;
+            const date = card.querySelectorAll('.flex.items-center.text-gray-600')[0].querySelector('span').textContent;
+            const location = card.querySelectorAll('.flex.items-center.text-gray-600')[1].querySelector('span').textContent;
+            const description = card.querySelector('p.text-gray-600').textContent;
+            const imageSrc = card.querySelector('img').src;
+
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('modalLocation').textContent = location;
+            document.getElementById('modalDescription').textContent = description;
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('eventModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+        }
+
+        document.querySelectorAll('.view-details-button').forEach(button => {
+            button.addEventListener('click', function() {
+                openEventModal(this);
+            });
+        });
+
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('eventModal').classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        function toggleFormFields() {
+            const entryType = document.getElementById('entryType').value;
+            document.getElementById('eventForm').style.display = entryType === 'event' ? 'block' : 'none';
+            document.getElementById('participantForm').style.display = entryType === 'participant' ? 'block' : 'none';
+            document.getElementById('categoryForm').style.display = entryType === 'category' ? 'block' : 'none';
+        }
+
+        toggleFormFields();
+        
+
+        function toggleEventDetails(headerElement) {
+            const eventItem = headerElement.closest('.border');
+            const detailsSection = eventItem.querySelector('.event-details');
+            const chevron = eventItem.querySelector('svg');
+
+            detailsSection.classList.toggle('hidden');
+            
+
+            chevron.classList.toggle('rotate-180');
+
+
+            document.querySelectorAll('.event-details').forEach(details => {
+                if (details !== detailsSection && !details.classList.contains('hidden')) {
+                    details.classList.add('hidden');
+                    details.closest('.border').querySelector('svg').classList.remove('rotate-180');
+                }
+            });
+        }
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+
+
+            window.scrollTo({
+                top: targetSection.offsetTop,
+                behavior: 'smooth'
+            });
+            });
+        });
+
+    </script> 
+
+
+    
+    
+    
+</body>
+</html>
