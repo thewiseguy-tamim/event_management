@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+<body>
+    {% if request.user.is_authenticated %}
+        {% include "logged_nav.html" %}
+    {% else %}
+        {% include "non_logged_nav.html" %}
+    {% endif %}
+    <main>
+      {% block content %}
+      
+      {% endblock content %}
+    </main>
+
+
+               <!-- Footer Section -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- About Column -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">BD Events</h3>
+                    <p class="text-gray-400 text-sm">Connecting people through memorable experiences since 2025.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <form class="flex flex-col space-y-3">
+                        <input type="email" placeholder="Enter your email" class="p-2 rounded-md text-gray-900">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 BD Events. All rights reserved.</p>
+                <p>Developed by Tamim Islam.</p>
+            </div>
+        </div>
+    </footer>
+    <div id="eventModal" class="hidden fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50">
+        <div class="relative p-4 w-full max-w-2xl m-auto mt-20">
+            <div class="bg-white rounded-lg shadow-xl">
+                <div class="p-6">
+                    <!-- Modal Header -->
+                    <div class="flex justify-between items-center pb-4">
+                        <h3 id="modalTitle" class="text-2xl font-bold text-gray-900"></h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Modal Content -->
+                    <img id="modalImage" class="w-full h-64 object-cover mb-4 rounded-lg" src="" alt="Event image">
+                    <div class="space-y-2 text-gray-600">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span id="modalDate"></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span id="modalLocation"></span>
+                        </div>
+                        <p id="modalDescription" class="mt-4 text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <script>
+        function openEventModal(button) {
+            const card = button.closest('.bg-white');
+
+            const title = card.querySelector('h3').textContent;
+            const date = card.querySelectorAll('.flex.items-center.text-gray-600')[0].querySelector('span').textContent;
+            const location = card.querySelectorAll('.flex.items-center.text-gray-600')[1].querySelector('span').textContent;
+            const description = card.querySelector('p.text-gray-600').textContent;
+            const imageSrc = card.querySelector('img').src;
+
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('modalLocation').textContent = location;
+            document.getElementById('modalDescription').textContent = description;
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('eventModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+        }
+
+        document.querySelectorAll('.view-details-button').forEach(button => {
+            button.addEventListener('click', function() {
+                openEventModal(this);
+            });
+        });
+
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('eventModal').classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        function toggleFormFields() {
+            const entryType = document.getElementById('entryType').value;
+            document.getElementById('eventForm').style.display = entryType === 'event' ? 'block' : 'none';
+            document.getElementById('participantForm').style.display = entryType === 'participant' ? 'block' : 'none';
+            document.getElementById('categoryForm').style.display = entryType === 'category' ? 'block' : 'none';
+        }
+
+        toggleFormFields();
+        
+
+        function toggleEventDetails(headerElement) {
+            const eventItem = headerElement.closest('.border');
+            const detailsSection = eventItem.querySelector('.event-details');
+            const chevron = eventItem.querySelector('svg');
+
+            detailsSection.classList.toggle('hidden');
+            
+
+            chevron.classList.toggle('rotate-180');
+
+
+            document.querySelectorAll('.event-details').forEach(details => {
+                if (details !== detailsSection && !details.classList.contains('hidden')) {
+                    details.classList.add('hidden');
+                    details.closest('.border').querySelector('svg').classList.remove('rotate-180');
+                }
+            });
+        }
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+
+
+            window.scrollTo({
+                top: targetSection.offsetTop,
+                behavior: 'smooth'
+            });
+            });
+        });
+
+    </script> 
+
+
+    
+    
+    
+</body>
+</html>

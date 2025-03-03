@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-800 text-white p-5">
+            <h1 class="text-2xl font-bold mb-5">{{user.groups.first.name}} <br> Dashboard</h1>
+            <nav>
+                <ul>
+                    <li class="mb-3"><a href="{% url "home" %}" class="block p-2 rounded hover:bg-gray-700">Home</a></li>
+                    <li class="mb-3"><a href="{% url "group_list" %}" class="block p-2 rounded hover:bg-gray-700">Groups</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+         <main>
+            {% block content %}{% endblock content %}
+         </main>
+        <main class="flex-1 p-6">
+            <!-- Users Section -->
+            <section id="users" class="mb-8">
+                <h2 class="text-xl font-bold mb-4">Users</h2>
+                <div class="bg-white p-4 rounded shadow">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border p-2 text-left">SL</th>
+                                <th class="border p-2 text-left">Name</th>
+                                <th class="border p-2 text-left">Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td class="border p-2">{{forloop.counter}}</td>
+                                    <td class="border p-2">{{ user.first_name | default:"No name registered"}}</td>
+                                    <td class="border p-2">{{ user.email }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+
+            <!-- Groups Section -->
+            <section id="groups" class="mb-8">
+                <h2 class="text-xl font-bold mb-4">Groups</h2>
+                <div class="bg-white p-4 rounded shadow">
+                    <button onclick="window.location.href='{% url 'create_group' %}'" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200 view-details-button">Create Group</button>
+                </div>
+            </section>
+
+            <!-- Roles Section -->
+            <section id="roles">
+                <h2 class="text-xl font-bold mb-4">Roles</h2>
+                <div class="bg-white p-4 rounded shadow">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border p-2 text-left">SL</th>
+                                <th class="border p-2 text-left">Name</th>
+                                <th class="border p-2 text-left">Current role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td class="border p-2">{{forloop.counter}}</td>
+                                    <td class="border p-2">{{ user.first_name | default:"No name registered"}}</td>
+                                    <td class="border p-2">{{ user.groups.first.name | default:"No role assinged"}}</td>
+                                    <td class=" p-2">
+                                        <a href="{% url 'assing-role' user.id %}" class="mt-6  bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 view-details-button">
+                                            Change Role
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -16,9 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from user import views 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('eventapp.urls')),  
+    path('', include('eventapp.urls')), 
+    path('user/', include('user.urls')), 
+    path('activate/<int:uid>/<str:token>/', views.activate, name='activate')
+ 
 ]
 

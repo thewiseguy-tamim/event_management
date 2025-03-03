@@ -9,54 +9,89 @@
     <title>Organizer Dashboard</title>
 </head>
 <body class="bg-gray-50">
-    <!-- Same Navbar -->
-    <nav class="bg-gray-100 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center flex-1">
-                    <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
-                    <div class="ml-6 flex-1 max-w-xl">
-                        <div class="relative flex items-center">
-                            <input 
-                                type="text" 
-                                placeholder="Search events..." 
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+<!-- Navbar -->
+<nav class="bg-gray-100 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Left section (Logo and search) -->
+            <div class="flex items-center flex-1">
+                <!-- Logo -->
+                <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
+                
+                <!-- Search Bar -->
+                <div class="ml-6 flex-1 max-w-xl">
+                    <div class="relative flex items-center">
+                        <input 
+                            type="text" 
+                            placeholder="Search events..." 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+                        >
+                        <button class="ml-2 bg-transparent hover:bg-gray-100 p-2 rounded-lg">
+                            <svg 
+                                class="w-6 h-6 text-gray-500" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24" 
+                                xmlns="http://www.w3.org/2000/svg"
                             >
-                            <button class="ml-2 bg-transparent hover:bg-gray-100 p-2 rounded-lg">
-                                <svg 
-                                    class="w-6 h-6 text-gray-500" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24" 
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        stroke-width="2" 
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
+                                <path 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    stroke-width="2" 
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                ></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Right section (Navigation links) -->
-                <div class="flex items-center space-x-4">
-                    <a href="#" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                        Dashboard
-                    </a>
-                    <a href="{% url 'home' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                        Events
-                    </a>
-                    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-                        Create Event
-                    </a>
+            <!-- Right section (Navigation links) -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    Dashboard
+                </a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    Events
+                </a>
+                <a href="{% url 'create_event' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    Create Event
+                </a>
+                {% if not request.user.is_authenticated %}
+                <a href="{% url 'sign-up' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Sign Up
+                </a>
+                <a href="{% url 'login' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Login
+                </a>
+                {% else %}
+                <div class="relative">
+                    <button class="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 focus:outline-none" id="profile-menu-button">
+                        {{ request.user.username|first|upper }}
+                    </button>
+                    <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                        <a href="{% url 'admin-dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                        {% if user.is_authenticated %}
+                            <form action="{% url 'logout' %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+                            </form>        
+                        {% else %}
+                            Annonyous
+                        {% endif %}
+                        {% comment %} <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a> {% endcomment %}
+                    </div>
                 </div>
+                <script>
+                    document.getElementById('profile-menu-button').addEventListener('click', function () {
+                        document.getElementById('profile-menu').classList.toggle('hidden');
+                    });
+                </script>
+                {% endif %}
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
     <!-- Dashboard Content -->
     <div class="min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -103,8 +138,8 @@
 
             <!-- Dynamic Events Section -->
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-6" id="sectionTitle">All Events</h2>
-                <div id="eventsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">All Events</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for event in events %}
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <div class="flex justify-between items-start mb-4">
@@ -115,12 +150,37 @@
                                 <p><span class="font-medium">Participants:</span> {{ event.participants.count }}</p>
                                 <p><span class="font-medium">Location:</span> {{ event.location }}</p>
                             </div>
+
+                            <div class="mt-4 flex gap-4">
+                                {% if user == event.organizer %}
+                                    <form action="{% url 'event_action' event.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="edit" value="true">
+                                        <button type="submit" class="bg-blue-400 text-white text-sm px-4 py-2 rounded-lg">Edit</button>
+                                    </form>
+                                    <form action="{% url 'event_action' event.id %}" method="post" onsubmit="return confirm('Are you sure?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="delete" value="true">
+                                        <button type="submit" class="bg-red-400 text-white text-sm px-4 py-2 rounded-lg">Delete</button>
+                                    </form>
+                                {% endif %}
+                                {% if user not in event.participants.all %}
+                                    <form action="{% url 'event_action' event.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="join" value="true">
+                                        <button type="submit" class="bg-green-400 text-white text-sm px-4 py-2 rounded-lg">Join</button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </div>
                     {% empty %}
                         <p class="text-gray-500">No events found.</p>
                     {% endfor %}
+
                 </div>
             </div>
+            
+            
         </div>
     </div>
 
