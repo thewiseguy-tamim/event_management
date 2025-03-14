@@ -100,15 +100,14 @@ def home(request):
 def event_action(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
-    # Debugging lines
-    print(request.user.groups.all())  # Check user groups
-    print(f"Logged-in user: {request.user}")  # Check logged-in user
-    print(f"Event organizer: {event.organizer}")  # Check event organizer
-    print(request.POST)  # Check POST data
+    print(request.user.groups.all()) 
+    print(f"Logged-in user: {request.user}")  
+    print(f"Event organizer: {event.organizer}")  
+    print(request.POST)  
 
     if request.method == "POST":
         if "edit" in request.POST:
-            # Update event fields
+  
             event.name = request.POST.get("name", event.name)
             event.date = request.POST.get("date", event.date)
             event.location = request.POST.get("location", event.location)
@@ -117,10 +116,10 @@ def event_action(request, event_id):
             return redirect("dashboard")
 
         elif "join" in request.POST and request.user not in event.participants.all():
-            # Add user to participants
+
             event.participants.add(request.user)
 
-            # Send confirmation email
+
             subject = "You have joined an event!"
             message = f"Hello {request.user.username},\n\nYou have successfully joined the event: {event.name}.\n\nDate: {event.date}\nLocation: {event.location}\n\nThank you!"
             recipient_email = request.user.email
@@ -130,19 +129,19 @@ def event_action(request, event_id):
             return redirect("dashboard")
 
         elif "delete" in request.POST:
-            # Delete the event
+ 
             event.delete()
             messages.success(request, "Event deleted successfully!")
             return redirect("dashboard")
 
-    # If no action is matched, redirect to dashboard
+  
     return redirect("dashboard")
 
 @login_required
 def rsvp_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     
-    # Check if user has already RSVP'd
+
     existing_rsvp = RSVP.objects.filter(user=request.user, event=event).first()
     
     if request.method == 'POST':
@@ -194,16 +193,15 @@ def rsvp_event(request, event_id):
     })
 
 
-# Add participant dashboard view
 @login_required
 def participant_dashboard(request):
-    # Get events where the user has RSVP'd 'Yes'
+
     rsvp_events = RSVP.objects.filter(user=request.user, response=True).select_related('event')
     
-    # Get all events the user is participating in (may include events from join directly)
+
     participating_events = request.user.events_participating.all()
     
-    # Combine both sets without duplicates
+
     all_events = set()
     for rsvp in rsvp_events:
         all_events.add(rsvp.event)

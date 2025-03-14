@@ -84,7 +84,7 @@ class CustomRegistrationForm(StyledFormMixin, forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])  # 🔥 This hashes the password
+        user.set_password(self.cleaned_data["password1"]) 
         if commit:
             user.save()
         return user

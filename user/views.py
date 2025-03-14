@@ -58,7 +58,7 @@ def sign_up(request):
         domain = get_current_site(request).domain
         activation_link = f'http://{domain}/activate/{uid}/{token}/'
 
-        # Send activation email
+
         subject = "Activate Your Account"
         message = render_to_string('activation_email.html', {
             'user': user,
@@ -119,7 +119,7 @@ def admin_dashboard(request):
 @admin_required
 def assing_role(request, user_id):
     user = User.objects.get(id=user_id)
-    form = AssingRoleForm(request.POST or None)  # Initialize form with POST data if available
+    form = AssingRoleForm(request.POST or None) 
     if request.method == 'POST':
         if form.is_valid():
             role = form.cleaned_data.get('role')
@@ -138,11 +138,11 @@ def create_group(request):
     form = CreateGroupForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            group = form.save()  # Save the group
+            group = form.save()  
             permissions = form.cleaned_data.get('permissions')
-            group.permissions.set(permissions)  # Assign permissions to the group
+            group.permissions.set(permissions) 
             messages.success(request, f"Group '{group.name}' has been created successfully with selected permissions.")
-            return redirect('admin-dashboard')  # Redirect to admin dashboard or group list
+            return redirect('admin-dashboard') 
         else:
             messages.error(request, "Invalid form submission. Please check the data.")
     
