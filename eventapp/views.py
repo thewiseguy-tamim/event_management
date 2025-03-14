@@ -6,14 +6,14 @@ from django.db.models import Count, Sum
 from django.contrib import messages
 from datetime import datetime
 from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Event
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import Event, Category, RSVP
+from .forms import EventCreationForm, RSVPForm
 
-
+@login_required(login_url='/user/sign-in/')
 def dashboard(request):
 
     events = Event.objects.prefetch_related("participants")
@@ -60,7 +60,20 @@ def dashboard(request):
 
     return render(request, 'dashboard.html', context)
 
+def organizer_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (
+            request.user.groups.filter(name='Admin').exists() or 
+            request.user.groups.filter(name='Organizer').exists()
+        ):
+            return view_func(request, *args, **kwargs)
+        else:
+            messages.error(request, "Access denied. Organizer privileges required.")
+            return redirect('home')
+    return _wrapped_view
 
+@login_required
+@organizer_required
 def create_event(request):
     if request.method == 'POST':
         form = EventCreationForm(request.POST, request.FILES)  
@@ -74,16 +87,7 @@ def create_event(request):
 
     return render(request, 'create_event.html', {'form': form})
 
-def rsvp_event(request):
-    if request.method == 'POST':
-        form = RSVPForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')  
-    else:
-        form = RSVPForm()
 
-    return render(request, 'rsvp_event.html', {'form': form})
 
 def home(request):
     
@@ -96,30 +100,117 @@ def home(request):
 def event_action(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
+    # Debugging lines
+    print(request.user.groups.all())  # Check user groups
+    print(f"Logged-in user: {request.user}")  # Check logged-in user
+    print(f"Event organizer: {event.organizer}")  # Check event organizer
+    print(request.POST)  # Check POST data
 
-    if request.method == "POST" and "edit" in request.POST and request.user == event.organizer:
-        event.name = request.POST.get("name", event.name)
-        event.date = request.POST.get("date", event.date)
-        event.location = request.POST.get("location", event.location)
-        event.save()
-        messages.success(request, "Event updated successfully!")
-        return redirect("dashboard")
+    if request.method == "POST":
+        if "edit" in request.POST:
+            # Update event fields
+            event.name = request.POST.get("name", event.name)
+            event.date = request.POST.get("date", event.date)
+            event.location = request.POST.get("location", event.location)
+            event.save()
+            messages.success(request, "Event updated successfully!")
+            return redirect("dashboard")
 
-    elif request.method == "POST" and "join" in request.POST and request.user not in event.participants.all():
-        event.participants.add(request.user)
+        elif "join" in request.POST and request.user not in event.participants.all():
+            # Add user to participants
+            event.participants.add(request.user)
 
-        subject = "You have joined an event!"
-        message = f"Hello {request.user.username},\n\nYou have successfully joined the event: {event.name}.\n\nDate: {event.date}\nLocation: {event.location}\n\nThank you!"
-        recipient_email = request.user.email  
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient_email], fail_silently=False)
+            # Send confirmation email
+            subject = "You have joined an event!"
+            message = f"Hello {request.user.username},\n\nYou have successfully joined the event: {event.name}.\n\nDate: {event.date}\nLocation: {event.location}\n\nThank you!"
+            recipient_email = request.user.email
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient_email], fail_silently=False)
 
-        messages.success(request, "You joined the event! A confirmation email has been sent.")
-        return redirect("dashboard")
+            messages.success(request, "You joined the event! A confirmation email has been sent.")
+            return redirect("dashboard")
 
+        elif "delete" in request.POST:
+            # Delete the event
+            event.delete()
+            messages.success(request, "Event deleted successfully!")
+            return redirect("dashboard")
 
-    elif request.method == "POST" and "delete" in request.POST and request.user == event.organizer:
-        event.delete()
-        messages.success(request, "Event deleted successfully!")
-        return redirect("dashboard")
-
+    # If no action is matched, redirect to dashboard
     return redirect("dashboard")
+
+@login_required
+def rsvp_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Check if user has already RSVP'd
+    existing_rsvp = RSVP.objects.filter(user=request.user, event=event).first()
+    
+    if request.method == 'POST':
+        form = RSVPForm(request.POST, instance=existing_rsvp)
+        if form.is_valid():
+            rsvp = form.save(commit=False)
+            
+            if not existing_rsvp:
+                rsvp.user = request.user
+                rsvp.event = event
+            
+            rsvp.save()
+            
+            # Add user to participants if they responded 'Yes'
+            if rsvp.response:
+                event.participants.add(request.user)
+            else:
+                # Remove from participants if they responded 'No'
+                event.participants.remove(request.user)
+            
+            # Send confirmation email
+            subject = f"RSVP Confirmation for {event.name}"
+            message = f"Hello {request.user.username},\n\n"
+            message += f"Your RSVP for {event.name} has been received.\n\n"
+            message += f"Your response: {'Attending' if rsvp.response else 'Not Attending'}\n"
+            message += f"Event details:\n"
+            message += f"Date: {event.date}\n"
+            message += f"Time: {event.time or 'Not specified'}\n"
+            message += f"Location: {event.location}\n\n"
+            message += "Thank you!"
+            
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [request.user.email],
+                fail_silently=False
+            )
+            
+            messages.success(request, "Your RSVP has been recorded. A confirmation email has been sent.")
+            return redirect('dashboard')
+    else:
+        form = RSVPForm(instance=existing_rsvp)
+    
+    return render(request, 'rsvp_event.html', {
+        'form': form,
+        'event': event,
+        'existing_rsvp': existing_rsvp
+    })
+
+
+# Add participant dashboard view
+@login_required
+def participant_dashboard(request):
+    # Get events where the user has RSVP'd 'Yes'
+    rsvp_events = RSVP.objects.filter(user=request.user, response=True).select_related('event')
+    
+    # Get all events the user is participating in (may include events from join directly)
+    participating_events = request.user.events_participating.all()
+    
+    # Combine both sets without duplicates
+    all_events = set()
+    for rsvp in rsvp_events:
+        all_events.add(rsvp.event)
+    
+    for event in participating_events:
+        all_events.add(event)
+    
+    return render(request, 'participant_dashboard.html', {
+        'events': all_events
+    })

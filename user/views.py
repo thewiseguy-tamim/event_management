@@ -7,11 +7,42 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+
+
+def admin_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+        else:
+            messages.error(request, "Access denied. Admin privileges required.")
+            return redirect('home')
+    return _wrapped_view
+
+def organizer_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (
+            request.user.groups.filter(name='Admin').exists() or 
+            request.user.groups.filter(name='Organizer').exists()
+        ):
+            return view_func(request, *args, **kwargs)
+        else:
+            messages.error(request, "Access denied. Organizer privileges required.")
+            return redirect('home')
+    return _wrapped_view
+
+def participant_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return view_func(request, *args, **kwargs)
+        else:
+            messages.error(request, "Please log in to continue.")
+            return redirect('login')
+    return _wrapped_view
+
 
 def sign_up(request):
     form = CustomRegistrationForm(request.POST or None)
@@ -70,17 +101,11 @@ def sign_out(request):
         return redirect('home')
     return redirect('home')
 
-@login_required   
+@login_required
+@admin_required
 def admin_dashboard(request):
     users = User.objects.all()
-    role = None
-
-    if request.user.groups.filter(name="Admin").exists():
-        role = "Admin"
-    elif request.user.groups.filter(name="Organizer").exists():
-        role = "Organizer"
-    elif request.user.groups.filter(name="Participant").exists():
-        role = "Participant"
+    role = request.user.groups.first().name if request.user.groups.exists() else "No Role Assigned"
 
     context = {
         "role": role,
@@ -90,30 +115,37 @@ def admin_dashboard(request):
     return render(request, 'ad_dashboard.html', context)
     
 
+@login_required
+@admin_required
 def assing_role(request, user_id):
-    user = User.objects.get(id = user_id)
-    form = AssingRoleForm()
+    user = User.objects.get(id=user_id)
+    form = AssingRoleForm(request.POST or None)  # Initialize form with POST data if available
     if request.method == 'POST':
-        form = AssingRoleForm(request.POST)
         if form.is_valid():
             role = form.cleaned_data.get('role')
             user.groups.clear()
             user.groups.add(role)
-            messages.success(request, f"{role.name} has been assigned successfully to {user.first_name}")
+            messages.success(request, f"{role.name} has been assigned successfully to {user.username}")
             return redirect('admin-dashboard')
-        
+        else:
+            messages.error(request, "Invalid form submission. Please check the data.")
+    
     return render(request, 'assing_role.html', {"form": form, "user": user})
 
+@login_required
+@admin_required
 def create_group(request):
-    form = CreateGroupForm()
+    form = CreateGroupForm(request.POST or None)
     if request.method == 'POST':
-        form = CreateGroupForm(request.POST)
-
         if form.is_valid():
-            group = form.save()
-            messages.success(request, f"Group {group.name} has been created successfully")
-            return redirect('create_group')
-
+            group = form.save()  # Save the group
+            permissions = form.cleaned_data.get('permissions')
+            group.permissions.set(permissions)  # Assign permissions to the group
+            messages.success(request, f"Group '{group.name}' has been created successfully with selected permissions.")
+            return redirect('admin-dashboard')  # Redirect to admin dashboard or group list
+        else:
+            messages.error(request, "Invalid form submission. Please check the data.")
+    
     return render(request, 'create_group.html', {'form': form})
 
 

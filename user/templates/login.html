@@ -50,7 +50,7 @@
                             <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                                 Dashboard
                             </a>
-                            <a href="#" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="{% url 'home' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                                 Events
                             </a>
                             <a href="{% url 'create_event' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
@@ -69,6 +69,9 @@
                                     {{ request.user.username|first|upper }}
                                 </button>
                                 <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                                    <a href="{% url 'participant_dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                        My Events
+                                    </a>
                                     <a href="{% url 'admin-dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
                                     {% if user.is_authenticated %}
                                         <form action="{% url 'logout' %}" method="POST">

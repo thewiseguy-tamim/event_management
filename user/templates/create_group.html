@@ -5,22 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <title>Group</title>
+    <title>Create Group</title>
 </head>
 <body>
-    
-    <div class='w-1/2 mx-auto my-8'>
+    <div class="w-1/2 mx-auto my-8">
+        <!-- Display messages -->
         <ul>
             {% for message in messages %}
-                <li class="bg-green-500 text-white px-1 py-2">{{message}}</li>
+                <li class="bg-green-500 text-white px-4 py-2 rounded-md mb-4">{{ message }}</li>
             {% endfor %}
         </ul>
-        <form method='POST'>
+
+        <!-- Create Group Form -->
+        <form method="POST">
             {% csrf_token %}
-            {{form}}
-            <button type="submit" class="mt-3 px-2 py-1 text-white bg-blue-500 rounded">Create Group</button>
+            <div class="mb-4">
+                <label for="id_name" class="block text-gray-700">Group Name:</label>
+                {{ form.name }}
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Permissions:</label>
+                {{ form.permissions }}
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                Create Group
+            </button>
         </form>
     </div>
-    
 </body>
 </html>

@@ -47,3 +47,14 @@ class RSVPForm(StyledFormMixin, forms.ModelForm):
             field.widget.attrs.update({
                 'class': 'border-2 border-gray-300 w-full p-3 rounded-lg shadow-sm focus:outline-none focus:border-rose-500 focus:ring-rose-500'
             })
+
+from django import forms
+from .models import RSVP
+
+class RSVPForm(forms.ModelForm):
+    class Meta:
+        model = RSVP
+        fields = ['response']
+        widgets = {
+            'response': forms.RadioSelect(choices=((True, 'Yes'), (False, 'No')))
+        }
