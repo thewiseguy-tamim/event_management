@@ -73,7 +73,6 @@ def organizer_required(view_func):
     return _wrapped_view
 
 @login_required
-@organizer_required
 def create_event(request):
     if request.method == 'POST':
         form = EventCreationForm(request.POST, request.FILES)  
