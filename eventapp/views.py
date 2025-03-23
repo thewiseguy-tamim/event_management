@@ -1,213 +1,166 @@
-from django.shortcuts import render, redirect
-from .models import Event, Category
-from .forms import EventCreationForm, RSVPForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView, CreateView, ListView, View, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count, Sum
 from django.contrib import messages
-from datetime import datetime
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Event, Category, RSVP
 from .forms import EventCreationForm, RSVPForm
+from django.contrib.auth.models import User
 
-@login_required(login_url='/user/sign-in/')
-def dashboard(request):
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard.html'
+    login_url = '/user/sign-in/'
 
-    events = Event.objects.prefetch_related("participants")
-    participants = User.objects.all()
-    categories = Category.objects.all()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        events = Event.objects.prefetch_related("participants")
+        participants = User.objects.all()
+        categories = Category.objects.all()
+        today = timezone.now().date()
+        filter_type = self.request.GET.get('filter', 'all')
 
+        if filter_type == 'upcoming':
+            events = events.filter(date__gte=today)
+        elif filter_type == 'past':
+            events = events.filter(date__lt=today)
 
-    print("Events:", events)
-    print("Participants:", participants)
-    print("Categories:", categories)
+        total_participants = events.annotate(
+            num_participants=Count('participants')
+        ).aggregate(total=Sum('num_participants'))['total'] or 0
 
-   
-    today = timezone.now().date()
+        context.update({
+            'total_participants': total_participants,
+            'total_events': events.count(),
+            'upcoming_events': events.filter(date__gte=today).count(),
+            'past_events': events.filter(date__lt=today).count(),
+            'today_events': events.filter(date=today),
+            'events': events,
+            'participants': participants,
+            'categories': categories,
+            'filter': filter_type,
+            'nums': range(3)
+        })
+        return context
 
-    
-    filter_type = request.GET.get('filter', 'all')  
-
-    if filter_type == 'upcoming':
-        events = events.filter(date__gte=today)
-    elif filter_type == 'past':
-        events = events.filter(date__lt=today)
-    
-   
-    total_participants = events.annotate(num_participants=Count('participants')).aggregate(total=Sum('num_participants'))['total'] or 0
-
-    
-    total_events = events.count()
-    upcoming_events = events.filter(date__gte=today).count()
-    past_events = events.filter(date__lt=today).count()
-    today_events = events.filter(date=today)
-    
-    context = {
-        'total_participants': total_participants,
-        'total_events': total_events,
-        'upcoming_events': upcoming_events,
-        'past_events': past_events,
-        'today_events': today_events,
-        'events': events,
-        'participants': participants,
-        'categories': categories,
-        'filter': filter_type,
-        'nums': range(3)
-    }
-
-    return render(request, 'dashboard.html', context)
-
-def organizer_required(view_func):
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated and (
-            request.user.groups.filter(name='Admin').exists() or 
-            request.user.groups.filter(name='Organizer').exists()
-        ):
-            return view_func(request, *args, **kwargs)
-        else:
+class OrganizerRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.groups.filter(name='Admin').exists() or 
+                request.user.groups.filter(name='Organizer').exists()):
             messages.error(request, "Access denied. Organizer privileges required.")
             return redirect('home')
-    return _wrapped_view
+        return super().dispatch(request, *args, **kwargs)
 
-@login_required
-def create_event(request):
-    if request.method == 'POST':
-        form = EventCreationForm(request.POST, request.FILES)  
-        if form.is_valid():
-            event = form.save(commit=False) 
-            event.organizer = request.user  
-            event.save()  
-            return redirect('home')  
-    else:
-        form = EventCreationForm()
+class EventCreateView(LoginRequiredMixin, CreateView):
+    model = Event
+    form_class = EventCreationForm
+    template_name = 'create_event.html'
+    login_url = '/user/sign-in/'
 
-    return render(request, 'create_event.html', {'form': form})
+    def form_valid(self, form):
+        form.instance.organizer = self.request.user
+        return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse('home')
 
+class HomeView(ListView):
+    model = Event
+    template_name = 'home.html'
+    context_object_name = 'events'
 
-def home(request):
-    
-    events = Event.objects.all()
-    
+class EventActionView(LoginRequiredMixin, View):
+    login_url = '/user/sign-in/'
 
-    return render(request, 'home.html', {'events': events})
+    def post(self, request, *args, **kwargs):
+        event = get_object_or_404(Event, id=kwargs['event_id'])
 
-@login_required
-def event_action(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
+        if 'edit' in request.POST or 'delete' in request.POST:
+            if not (request.user == event.organizer or request.user.groups.filter(name='Admin').exists()):
+                messages.error(request, "Access denied. Organizer privileges required.")
+                return redirect('dashboard')
 
-    print(request.user.groups.all()) 
-    print(f"Logged-in user: {request.user}")  
-    print(f"Event organizer: {event.organizer}")  
-    print(request.POST)  
+            if 'edit' in request.POST:
+                event.name = request.POST.get('name', event.name)
+                event.date = request.POST.get('date', event.date)
+                event.location = request.POST.get('location', event.location)
+                event.save()
+                messages.success(request, "Event updated successfully!")
+            elif 'delete' in request.POST:
+                event.delete()
+                messages.success(request, "Event deleted successfully!")
 
-    if request.method == "POST":
-        if "edit" in request.POST:
-  
-            event.name = request.POST.get("name", event.name)
-            event.date = request.POST.get("date", event.date)
-            event.location = request.POST.get("location", event.location)
-            event.save()
-            messages.success(request, "Event updated successfully!")
-            return redirect("dashboard")
-
-        elif "join" in request.POST and request.user not in event.participants.all():
-
-            event.participants.add(request.user)
-
-
-            subject = "You have joined an event!"
-            message = f"Hello {request.user.username},\n\nYou have successfully joined the event: {event.name}.\n\nDate: {event.date}\nLocation: {event.location}\n\nThank you!"
-            recipient_email = request.user.email
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient_email], fail_silently=False)
-
-            messages.success(request, "You joined the event! A confirmation email has been sent.")
-            return redirect("dashboard")
-
-        elif "delete" in request.POST:
- 
-            event.delete()
-            messages.success(request, "Event deleted successfully!")
-            return redirect("dashboard")
-
-  
-    return redirect("dashboard")
-
-@login_required
-def rsvp_event(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    
-
-    existing_rsvp = RSVP.objects.filter(user=request.user, event=event).first()
-    
-    if request.method == 'POST':
-        form = RSVPForm(request.POST, instance=existing_rsvp)
-        if form.is_valid():
-            rsvp = form.save(commit=False)
-            
-            if not existing_rsvp:
-                rsvp.user = request.user
-                rsvp.event = event
-            
-            rsvp.save()
-            
-            # Add user to participants if they responded 'Yes'
-            if rsvp.response:
+        elif 'join' in request.POST:
+            if request.user not in event.participants.all():
                 event.participants.add(request.user)
+                send_mail(
+                    "You have joined an event!",
+                    f"Hello {request.user.username},\n\nYou joined {event.name}.",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [request.user.email],
+                    fail_silently=False
+                )
+                messages.success(request, "You joined the event! Confirmation email sent.")
             else:
-                # Remove from participants if they responded 'No'
-                event.participants.remove(request.user)
-            
-            # Send confirmation email
-            subject = f"RSVP Confirmation for {event.name}"
-            message = f"Hello {request.user.username},\n\n"
-            message += f"Your RSVP for {event.name} has been received.\n\n"
-            message += f"Your response: {'Attending' if rsvp.response else 'Not Attending'}\n"
-            message += f"Event details:\n"
-            message += f"Date: {event.date}\n"
-            message += f"Time: {event.time or 'Not specified'}\n"
-            message += f"Location: {event.location}\n\n"
-            message += "Thank you!"
-            
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [request.user.email],
-                fail_silently=False
-            )
-            
-            messages.success(request, "Your RSVP has been recorded. A confirmation email has been sent.")
-            return redirect('dashboard')
-    else:
-        form = RSVPForm(instance=existing_rsvp)
-    
-    return render(request, 'rsvp_event.html', {
-        'form': form,
-        'event': event,
-        'existing_rsvp': existing_rsvp
-    })
+                messages.warning(request, "You're already a participant.")
 
+        return redirect('dashboard')
 
-@login_required
-def participant_dashboard(request):
+class RSVPEventView(LoginRequiredMixin, FormView):
+    form_class = RSVPForm
+    template_name = 'rsvp_event.html'
 
-    rsvp_events = RSVP.objects.filter(user=request.user, response=True).select_related('event')
-    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        self.event = get_object_or_404(Event, id=self.kwargs['event_id'])
+        self.existing_rsvp = RSVP.objects.filter(
+            user=self.request.user, 
+            event=self.event
+        ).first()
+        kwargs['instance'] = self.existing_rsvp
+        return kwargs
 
-    participating_events = request.user.events_participating.all()
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['event'] = self.event
+        context['existing_rsvp'] = self.existing_rsvp
+        return context
 
-    all_events = set()
-    for rsvp in rsvp_events:
-        all_events.add(rsvp.event)
-    
-    for event in participating_events:
-        all_events.add(event)
-    
-    return render(request, 'participant_dashboard.html', {
-        'events': all_events
-    })
+    def form_valid(self, form):
+        rsvp = form.save(commit=False)
+        if not self.existing_rsvp:
+            rsvp.user = self.request.user
+            rsvp.event = self.event
+        rsvp.save()
+
+        if rsvp.response:
+            self.event.participants.add(self.request.user)
+        else:
+            self.event.participants.remove(self.request.user)
+
+        send_mail(
+            f"RSVP Confirmation for {self.event.name}",
+            f"Hello {self.request.user.username},\n\nRSVP: {'Attending' if rsvp.response else 'Not Attending'}",
+            settings.DEFAULT_FROM_EMAIL,
+            [self.request.user.email],
+            fail_silently=False
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard')
+
+class ParticipantDashboardView(LoginRequiredMixin, ListView):
+    template_name = 'participant_dashboard.html'
+    context_object_name = 'events'
+
+    def get_queryset(self):
+        rsvp_events = Event.objects.filter(
+            rsvp__user=self.request.user, 
+            rsvp__response=True
+        )
+        participating_events = self.request.user.events_participating.all()
+        return rsvp_events.union(participating_events)

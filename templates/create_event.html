@@ -10,91 +10,94 @@
 </head>
 <body >
         <!-- Navbar -->
-        <nav class="bg-gray-100 shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <!-- Left section (Logo and search) -->
-                    <div class="flex items-center flex-1">
-                        <!-- Logo -->
-                        <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
-                        
-                        <!-- Search Bar -->
-                        <div class="ml-6 flex-1 max-w-xl">
-                            <div class="relative flex items-center">
-                                <input 
-                                    type="text" 
-                                    placeholder="Search events..." 
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+    <nav class="bg-gray-100 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Left section (Logo and search) -->
+                <div class="flex items-center flex-1">
+                    <!-- Logo -->
+                    <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
+                    
+                    <!-- Search Bar -->
+                    <div class="ml-6 flex-1 max-w-xl">
+                        <div class="relative flex items-center">
+                            <input 
+                                type="text" 
+                                placeholder="Search events..." 
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+                            >
+                            <button class="ml-2 bg-transparent hover:bg-gray-100 p-2 rounded-lg">
+                                <svg 
+                                    class="w-6 h-6 text-gray-500" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24" 
+                                    xmlns="http://www.w3.org/2000/svg"
                                 >
-                                <button class="ml-2 bg-transparent hover:bg-gray-100 p-2 rounded-lg">
-                                    <svg 
-                                        class="w-6 h-6 text-gray-500" 
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        viewBox="0 0 24 24" 
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path 
-                                            stroke-linecap="round" 
-                                            stroke-linejoin="round" 
-                                            stroke-width="2" 
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                        ></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <!-- Right section (Navigation links) -->
-                    <div class="flex items-center space-x-4">
-                        <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                            Dashboard
-                        </a>
-                        <a href="{% url 'home' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                            Events
-                        </a>
-                        <a href="{% url 'create_event' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                            Create Event
-                        </a>
-                        {% if not request.user.is_authenticated %}
-                        <a href="{% url 'sign-up' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-                            Sign Up
-                        </a>
-                        <a href="{% url 'login' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-                            Login
-                        </a>
-                        {% else %}
-                        <div class="relative">
-                            <button class="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 focus:outline-none" id="profile-menu-button">
-                                {{ request.user.username|first|upper }}
+                                    <path 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        stroke-width="2" 
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                    ></path>
+                                </svg>
                             </button>
-                            <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
-                                <a href="{% url 'participant_dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                    My Events
-                                </a>
-                                <a href="{% url 'admin-dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
-                                {% if user.is_authenticated %}
-                                    <form action="{% url 'logout' %}" method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
-                                    </form>        
-                                {% else %}
-                                    Annonyous
-                                {% endif %}
-                                {% comment %} <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a> {% endcomment %}
-                            </div>
                         </div>
-                        <script>
-                            document.getElementById('profile-menu-button').addEventListener('click', function () {
-                                document.getElementById('profile-menu').classList.toggle('hidden');
-                            });
-                        </script>
-                        {% endif %}
                     </div>
                 </div>
+
+                <!-- Right section (Navigation links) -->
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Events
+                    </a>
+                    <a href="{% url 'create_event' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Create Event
+                    </a>
+                    {% if not request.user.is_authenticated %}
+                    <a href="{% url 'sign-up' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                        Sign Up
+                    </a>
+                    <a href="{% url 'login' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                        Login
+                    </a>
+                    {% else %}
+                    <div class="relative">
+                        <button class="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 focus:outline-none" id="profile-menu-button">
+                            {{ request.user.username|first|upper }}
+                        </button>
+                        <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                            <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="{% url 'participant_dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                My Events
+                            </a>
+                            <a href="{% url 'admin-dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                            {% if user.is_authenticated %}
+                                <form action="{% url 'logout' %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+                                </form>        
+                            {% else %}
+                                Annonyous
+                            {% endif %}
+                            {% comment %} <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a> {% endcomment %}
+                        </div>
+                    </div>
+                    <script>
+                        document.getElementById('profile-menu-button').addEventListener('click', function () {
+                            document.getElementById('profile-menu').classList.toggle('hidden');
+                        });
+                    </script>
+                    {% endif %}
+                </div>
             </div>
-        </nav>
+        </div>
+    </nav>
+
+    
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
         <div class="w-full max-w-7xl p-6 bg-white rounded-lg shadow-lg">
             <h1 class="text-2xl font-semibold mb-6 text-center text-gray-800">Create a New Event</h1>

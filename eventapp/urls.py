@@ -1,17 +1,17 @@
-from django.urls import path,include
-from . import views
+from django.urls import path
+from .views import DashboardView, EventCreateView, HomeView, EventActionView, RSVPEventView, ParticipantDashboardView
 from django.conf import settings
 from django.conf.urls.static import static
 
 
-urlpatterns = [
-    path('', views.home, name='home'),  
-    path('create_event/', views.create_event, name='create_event'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('event/<int:event_id>/action/', views.event_action, name='event_action'),  
-    path('event/<int:event_id>/rsvp/', views.rsvp_event, name='rsvp_event'),
-    path('my-events/', views.participant_dashboard, name='participant_dashboard'),
 
+urlpatterns = [
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('create/', EventCreateView.as_view(), name='create_event'),
+    path('', HomeView.as_view(), name='home'),
+    path('event/<int:event_id>/action/', EventActionView.as_view(), name='event_action'),
+    path('event/<int:event_id>/rsvp/', RSVPEventView.as_view(), name='rsvp_event'),
+    path('my-events/', ParticipantDashboardView.as_view(), name='participant_dashboard'),
 ]
 
 if settings.DEBUG:

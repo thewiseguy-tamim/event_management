@@ -70,6 +70,7 @@
                         {{ request.user.username|first|upper }}
                     </button>
                     <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                        <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                         <a href="{% url 'participant_dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             My Events
                         </a>

@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <title>Profile</title>
+</head>
+<body class="bg-gray-50">
+<!-- Navbar -->
+<nav class="bg-gray-100 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Left section (Logo and search) -->
+            <div class="flex items-center flex-1">
+                <!-- Logo -->
+                <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
+                
+                <!-- Search Bar -->
+                <div class="ml-6 flex-1 max-w-xl">
+                    <div class="relative flex items-center">
+                        <input 
+                            type="text" 
+                            placeholder="Search events..." 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+                        >
+                        <button class="ml-2 bg-transparent hover:bg-gray-100 p-2 rounded-lg">
+                            <svg 
+                                class="w-6 h-6 text-gray-500" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24" 
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    stroke-width="2" 
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right section (Navigation links) -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    Dashboard
+                </a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    Events
+                </a>
+                <a href="{% url 'create_event' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    Create Event
+                </a>
+                {% if not request.user.is_authenticated %}
+                <a href="{% url 'sign-up' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Sign Up
+                </a>
+                <a href="{% url 'login' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Login
+                </a>
+                {% else %}
+                <div class="relative">
+                    <button class="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 focus:outline-none" id="profile-menu-button">
+                        {{ request.user.username|first|upper }}
+                    </button>
+                    <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                        <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="{% url 'participant_dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            My Events
+                        </a>
+                        <a href="{% url 'admin-dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                        {% if user.is_authenticated %}
+                            <form action="{% url 'logout' %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+                            </form>        
+                        {% else %}
+                            Annonyous
+                        {% endif %}
+                        {% comment %} <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a> {% endcomment %}
+                    </div>
+                </div>
+                <script>
+                    document.getElementById('profile-menu-button').addEventListener('click', function () {
+                        document.getElementById('profile-menu').classList.toggle('hidden');
+                    });
+                </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div class="flex flex-col md:flex-row gap-8">
+        <!-- Left Column (Profile Photo and Buttons) -->
+        <div class="w-full md:w-1/3">
+            <div class="bg-white rounded-lg shadow p-6 text-center">
+                <div class="mb-4">
+                    <img 
+                        src="{{ user.profile.profile_picture.url }}" 
+                        alt="{{ user.get_full_name }}" 
+                        class="w-32 h-32 rounded-full mx-auto object-cover border-2 border-gray-300 shadow-inner shadow-gray-300 cursor-pointer transition-transform duration-200 hover:scale-105"
+                    >
+                </div>
+                <h2 class="text-xl font-semibold mb-1">{{ user.get_full_name }}</h2>
+                <p class="text-gray-600 mb-1">@{{ user.username }}</p>
+                <p class="text-gray-600 mb-4">{{ user.email }}</p>
+                
+                {% if not edit_mode and not password_change_mode %}
+                <div class="flex flex-col gap-3">
+                    <a href="{% url 'edit_profile' %}" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                        Edit Profile
+                    </a>
+                    <a href="{% url 'change_password' %}" class="w-full border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50">
+                        Change Password
+                    </a>
+                    <a href="{% url 'password_reset' %}" class="text-blue-600 hover:text-blue-800 text-sm">
+                        Forgot Password?
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Right Column (Profile Details/Edit Forms) -->
+        <div class="w-full md:w-2/3">
+            <div class="bg-white rounded-lg shadow">
+                {% if edit_mode %}
+                    <!-- Edit Profile Form -->
+                    <div class="border-b border-gray-200 px-6 py-4">
+                        <h3 class="text-lg font-medium">Edit Profile</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Profile Picture</label>
+                                {{ profile_form.profile_picture }}
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-medium mb-2">First Name</label>
+                                    {{ user_form.first_name }}
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
+                                    {{ user_form.last_name }}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                                {{ user_form.email }}
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
+                                {{ profile_form.phone_number }}
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3">
+                                <a href="{% url 'profile' %}" class="border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                {% elif password_change_mode %}
+                    <!-- Change Password Form -->
+                    <div class="border-b border-gray-200 px-6 py-4">
+                        <h3 class="text-lg font-medium">Change Password</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Current Password</label>
+                                {{ password_form.old_password }}
+                                {% if password_form.old_password.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ password_form.old_password.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">New Password</label>
+                                {{ password_form.new_password1 }}
+                                {% if password_form.new_password1.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ password_form.new_password1.errors.0 }}</p>
+                                {% endif %}
+                                {% if password_form.new_password1.help_text %}
+                                    <div class="text-gray-500 text-xs mt-1">{{ password_form.new_password1.help_text|safe }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Confirm New Password</label>
+                                {{ password_form.new_password2 }}
+                                {% if password_form.new_password2.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ password_form.new_password2.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3">
+                                <a href="{% url 'profile' %}" class="border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                                    Change Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                {% else %}
+                    <!-- Profile Details -->
+                    <div class="border-b border-gray-200 px-6 py-4">
+                        <h3 class="text-lg font-medium">Profile Details</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="flex flex-col divide-y">
+                            <div class="py-3 flex flex-col sm:flex-row">
+                                <div class="w-full sm:w-1/3 font-medium">Full Name</div>
+                                <div class="w-full sm:w-2/3 text-gray-600">{{ user.first_name }} {{ user.last_name }}</div>
+                            </div>
+                            
+                            <div class="py-3 flex flex-col sm:flex-row">
+                                <div class="w-full sm:w-1/3 font-medium">Username</div>
+                                <div class="w-full sm:w-2/3 text-gray-600">{{ user.username }}</div>
+                            </div>
+                            
+                            <div class="py-3 flex flex-col sm:flex-row">
+                                <div class="w-full sm:w-1/3 font-medium">Email</div>
+                                <div class="w-full sm:w-2/3 text-gray-600">{{ user.email }}</div>
+                            </div>
+                            
+                            <div class="py-3 flex flex-col sm:flex-row">
+                                <div class="w-full sm:w-1/3 font-medium">Phone</div>
+                                <div class="w-full sm:w-2/3 text-gray-600">{{ user.profile.phone_number|default:"Not provided" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="bg-gray-900 text-white mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- About Column -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">BD Events</h3>
+                <p class="text-gray-400 text-sm">Connecting people through memorable experiences since 2025.</p>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <!-- Social Media -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <span class="sr-only">Facebook</span>
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Newsletter -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                <form class="flex flex-col space-y-3">
+                    <input type="email" placeholder="Enter your email" class="p-2 rounded-md text-gray-900">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Copyright -->
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2025 BD Events. All rights reserved.</p>
+            <p>Developed by Tamim Islam.</p>
+        </div>
+    </div>
+</footer>
+
+{% comment %} <!-- JavaScript for Profile Menu Toggle -->
+<script>
+    document.getElementById('profile-menu-button').addEventListener('click', function (e) {
+        e.stopPropagation();
+        document.getElementById('profile-menu').classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+        document.getElementById('profile-menu').classList.add('hidden');
+    });
+</script> {% endcomment %}
+</body>
+</html>

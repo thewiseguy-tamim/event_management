@@ -2,6 +2,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group, Permission
 import re
 from django import forms
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
+from .models import UserProfile
 
 class StyledFormMixin:
     """ Mixing to apply style to form field"""
@@ -126,3 +130,35 @@ class CustomLoginForm(StyledFormMixin, AuthenticationForm):
         # Additional styling if needed
         self.fields['username'].label = "Username"
         self.fields['password'].label = "Password"
+
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['phone_number', 'profile_picture']
+        widgets = {
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})

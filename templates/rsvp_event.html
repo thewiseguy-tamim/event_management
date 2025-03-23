@@ -11,15 +11,16 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
+    <!-- Navbar -->
     <nav class="bg-gray-100 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-         
+                <!-- Left section (Logo and search) -->
                 <div class="flex items-center flex-1">
-          
+                    <!-- Logo -->
                     <a href="#" class="text-xl font-bold text-gray-800">BD Events</a>
                     
-                    
+                    <!-- Search Bar -->
                     <div class="ml-6 flex-1 max-w-xl">
                         <div class="relative flex items-center">
                             <input 
@@ -58,9 +59,6 @@
                     <a href="{% url 'create_event' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                         Create Event
                     </a>
-                    <a href="{% url 'participant_dashboard' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                        My Events
-                    </a>
                     {% if not request.user.is_authenticated %}
                     <a href="{% url 'sign-up' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
                         Sign Up
@@ -74,6 +72,7 @@
                             {{ request.user.username|first|upper }}
                         </button>
                         <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                            <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                             <a href="{% url 'participant_dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 My Events
                             </a>
@@ -86,6 +85,7 @@
                             {% else %}
                                 Annonyous
                             {% endif %}
+                            {% comment %} <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a> {% endcomment %}
                         </div>
                     </div>
                     <script>

@@ -11,6 +11,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.urls import reverse_lazy
+from .forms import UserUpdateForm, ProfileUpdateForm, CustomPasswordChangeForm
 
 
 def admin_required(view_func):
@@ -169,5 +176,64 @@ def activate(request, uid, token):
 
 
 
-    
 
+
+@login_required
+def profile_view(request):
+    """View user profile"""
+    return render(request, 'profile.html', {'user': request.user})
+
+@login_required
+def edit_profile(request):
+    """Update user profile information"""
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+    
+    return render(request, 'profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'edit_mode': True
+    })
+
+@login_required
+def change_password(request):
+    """Change user password"""
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Keep the user logged in
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+    else:
+        form = CustomPasswordChangeForm(request.user)
+    
+    return render(request, 'profile.html', {'password_form': form, 'password_change_mode': True})
+
+# Password Reset Views - These remain the same as before
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    subject_template_name = 'registration/password_reset_subject.txt'
+    email_template_name = 'registration/password_reset_email.html'
+    
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+    
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+    
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'
